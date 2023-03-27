@@ -8,19 +8,43 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <queue>
 // 소켓을 사용하기 위한 라이브러리
 #include <WinSock2.h>
+using namespace std;
+
+
 // 수신 버퍼 사이즈
-#define BUFFERSIZE 1024
+#define BUFFERSIZE 8196
 
 // 포트
 #define PORT 9090
 
+// MAX CLIENT 
+#define MAXCLIENT 100
 
-using namespace std;
+// other client 
 
-char* print(vector<char>* str);
-void client(SOCKET clientSock, SOCKADDR_IN clientAddr, vector<thread*>* clientlist);
+enum State
+{
+	WAITING,
+	CONNECTING,
+};
+
+struct otherClient
+{
+	SOCKET clientsock;
+	SOCKET sendClientsock;
+	SOCKADDR_IN clientaddr;
+
+	int iThrnum;
+	int iConnectedUser;
+	State sState;
+};
+
+void ChatingRelayServer();
+void client(SOCKET clientSock, SOCKADDR_IN clientAddr, vector<thread*>* clientlist, int thrnum);
+
 class Server
 {
 public:
@@ -28,8 +52,6 @@ public:
 	Server();
 	~Server();
 
-
-	
 	int Initialize();
 
 
@@ -41,5 +63,8 @@ public:
 	SOCKET serverSock;
 	// 소켓 주소 설정
 	SOCKADDR_IN addr;
+
+	// thr 넘버 ( client 번호 )
+	int iThrNum;
 };
 

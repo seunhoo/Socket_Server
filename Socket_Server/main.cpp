@@ -13,6 +13,10 @@ int main()
 
     // 서버를 시작한다.
     cout << "Server Start" << endl;
+
+    // 챗팅 중계 서버 시작
+    auto thrChating = new thread(ChatingRelayServer);
+
     // 다중 접속을 위해 while로 소켓을 대기한다.
     while (1)
     {
@@ -23,7 +27,7 @@ int main()
         // client가 접속을 하면 SOCKET을 받는다.
         SOCKET clientSock = accept(cServer->serverSock, (SOCKADDR*)&clientAddr, &len);
         // 쓰레드를 실행하고 쓰레드 리스트에 넣는다.
-        auto thr = new thread(client, clientSock, clientAddr, &cServer->clientlist);
+        auto thr = new thread(client, clientSock, clientAddr, &cServer->clientlist, cServer->iThrNum++);
         cServer->clientlist.push_back(thr);
     }
     // 종료가 되면 쓰레드 리스트에 남아 있는 쓰레드를 종료할 때까지 기다린다.
